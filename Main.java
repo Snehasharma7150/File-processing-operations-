@@ -1,0 +1,41 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+class InvalidProductDataException extends Exception {
+  public InvalidProductDataException(String message) {
+    super(message);
+  }
+}
+public class Main {
+  public static void main(String[] args) {
+    String inputFile = "products.csv";
+    String outputFile = "expensive_products.csv";
+    try (BufferedReader br = new BufferedReader(new FileReader(inputFile));
+         FileWriter fw = new FileWriter(outputFile)) {
+      String line;
+      while ((line = br.readLine()) != null) {
+        try {
+          String[] data = line.split(",");
+          if (data.length != 2) {
+            throw new InvalidProductDataException("Invalid product data");
+          }
+          String name = data[0];
+          double price = Double.parseDouble(data[1]);
+          if (price > 1000) {
+            fw.write(name + "," + price + "
+");
+          }
+        } catch (NumberFormatException e) {
+          System.out.println("Error: Invalid price format");
+        } catch (InvalidProductDataException e) {
+          System.out.println("Error: " + e.getMessage());
+        }
+      }
+    } catch (IOException e) {
+      System.out.println("Error: Unable to read/write file");
+    } finally {
+      System.out.println("File processing complete");
+    }
+  }
+}
